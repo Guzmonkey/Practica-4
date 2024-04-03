@@ -1,5 +1,6 @@
 # Practica-4
 Juego de cartas 
+```
 package com.mycompany.practica_4;
 public class Cartas {
     private String palo;
@@ -25,3 +26,4 @@ public class Cartas {
         return valor + " de " + palo;
     }
 }
+```

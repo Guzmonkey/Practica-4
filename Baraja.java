@@ -61,6 +61,7 @@ public class Baraja {
         }
     }
     
+    //Metodo para regresar el ArrayList de la baraja
     public ArrayList<Carta> getBarajaCartas(){
         return barajaCartas;
     }

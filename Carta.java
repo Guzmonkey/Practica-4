@@ -1,94 +1,51 @@
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import java.util.Scanner;
-import java.awt.Image;
-
-public class Cartas {
-    
-    private String figura;
+//Clase que modela una carta de la baraja espanola
+public class Carta {
+    //Variables de la clase 
     private int valor;
-    private String ruta;
-    private boolean visible;
-    private ImageIcon icono;
-    
-    public Cartas(String figura, int valor, boolean visible){
-        this.figura = figura;
+    private String clase;
+    private boolean esVisible;
+
+    //Constructor de la clase Carta
+    public Carta(int valor, String clase, boolean esVisible){
         this.valor = valor;
-        this.ruta = "C:\\Users\\Gustavo\\Documents\\NetBeansProjects\\juegoCartas\\src\\main\\java\\gushdezzz\\juegocartas\\imagenes\\folder\\" + figura + valor + ".jpg";
-        this.visible = true;
-        this.icono = new ImageIcon(ruta);
+        this.clase = clase;
+        this.esVisible = esVisible;
     }
-    
-    public void setFigura(String figura){
-        this.figura = figura;
-        if (this.visible == true){
-            this.ruta = "C:\\Users\\Gustavo\\Documents\\NetBeansProjects\\juegoCartas\\src\\main\\java\\gushdezzz\\juegocartas\\imagenes\\folder\\" + figura + valor + ".jpg";
-        }else{
-            this.ruta = "C:\\Users\\Gustavo\\Documents\\NetBeansProjects\\juegoCartas\\src\\main\\java\\gushdezzz\\juegocartas\\imagenes\\folder\\volteada.jpg";
-        }
-        this.icono = new ImageIcon(ruta);
+
+    //Getters y Setters del valor
+    public int getValor(){
+        return valor;
     }
-    
-    public String getFigura(){
-        return this.figura;
-    }
-    
+
     public void setValor(int valor){
         this.valor = valor;
-        if (this.visible == true){
-            this.ruta = "C:\\Users\\Gustavo\\Documents\\NetBeansProjects\\juegoCartas\\src\\main\\java\\gushdezzz\\juegocartas\\imagenes\\folder\\" + figura + valor + ".jpg";
-        }else{
-            this.ruta = "C:\\Users\\Gustavo\\Documents\\NetBeansProjects\\juegoCartas\\src\\main\\java\\gushdezzz\\juegocartas\\imagenes\\folder\\volteada.jpg";
-        }
-        this.icono = new ImageIcon(ruta);
     }
-    
-    public int getValor(){
-        return this.valor;
+
+    //Getters y Setters de la clase
+    public String getClase(){
+        return clase;
     }
-    
-    public void setVisible(boolean visible){
-        this.visible = visible;
-        if (this.visible == true){
-            this.ruta = "C:\\Users\\Gustavo\\Documents\\NetBeansProjects\\juegoCartas\\src\\main\\java\\gushdezzz\\juegocartas\\imagenes\\folder\\" + figura + valor + ".jpg";
-        }else{
-            this.ruta = "C:\\Users\\Gustavo\\Documents\\NetBeansProjects\\juegoCartas\\src\\main\\java\\gushdezzz\\juegocartas\\imagenes\\folder\\volteada.jpg";
-        }
-        this.icono = new ImageIcon(ruta);
+
+    public void setClase(String clase){
+        this.clase = clase;
     }
-    
-    public boolean getVisible(){
-        return this.visible;
+
+    //Getters y Setters de la clase
+    public boolean getEsVisible(){
+        return esVisible;
     }
-    
-    public ImageIcon getIcono(){
-        return this.icono;
+
+    //Metodo para hacer visisble o no
+    public void setEsVisible(boolean esVisible){
+        this.esVisible = esVisible;
     }
-    
+
+    //Metodo para mostrar en terminal
     public void mostrar(){
-        if (visible){
-            System.out.println("[" + valor + "/" + figura + "]");
+        if (esVisible){
+            System.out.println("[" + valor + "/" + clase + "]");
         }else{
             System.out.print("[?/?] ");
         }
     }
-    public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
-    System.out.println("Ingrese la figura: ");
-    String figura = scanner.next();
-    System.out.println("Ingrese el valor: ");
-    int valor = scanner.nextInt();
-    Cartas carta = new Cartas(figura, valor, true);
-    
-    ImageIcon imagenIcono = new ImageIcon(carta.getIcono().getImage().getScaledInstance(108, 144, Image.SCALE_DEFAULT));
-    JLabel etiqueta = new JLabel(imagenIcono);
-    
-    JFrame ventana = new JFrame("Imagen de la carta");
-    ventana.setSize(210, 210);
-    ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    ventana.add(etiqueta);
-    ventana.setVisible(true);
-    }
-
 }

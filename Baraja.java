@@ -40,7 +40,7 @@ public class Baraja {
 
     //Metodo mejorado
     public void crearBaraja() {
-        String[] tipos = {"moneda", "espadas", "palos", "copas"};
+        String[] tipos = {"monedas", "espadas", "palos", "copas"};
         for (String tipo : tipos) {
             for (int j = 0; j < 12; j++) {
                 barajaCartas.add(new Carta(j + 1, tipo, true));

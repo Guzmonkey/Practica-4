@@ -1,26 +1,25 @@
-package guzmonkey.juegocartas;
 //Clase que modela la baraja espanola
-
 //Librerias necesarias para el codigo 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class Baraja {
     //Variables de la clase
     //NivelDeAcceso ArrayList<TipoDeDato> Nombre
-    private ArrayList<Carta> barajaCartas;
+    private ArrayList<Cartas> barajaCartas;
 
     public Baraja(){
         barajaCartas = new ArrayList<>();
     }
 
     //Metodo para crear la baraja
-    public void crearBaraja() {
-        String[] tipos = {"moneda", "espadas", "palos", "copas"};
-        for (String tipo : tipos) {
-            for (int j = 0; j < 12; j++) {
-                barajaCartas.add(new Carta(j + 1, tipo, true));
+    public void crearBaraja(){
+        String[] tipos = {"oros", "espadas", "bastos", "copas"};
+        boolean flag;
+        for (int i = 0; i < 13; i++){
+            for(String tipo : tipos){
+                flag = true;
+                barajaCartas.add(new Cartas(tipo, i+1));
             }
         }
     }
@@ -33,10 +32,16 @@ public class Baraja {
     public void mostrarBaraja(){
         //Mostramos todas las cartas de la baraja
         //for (tipoDeDato Variable : nombreDelArrayList) - for-each 
-        for (Carta carta : barajaCartas){
+        for (Cartas carta : barajaCartas){
             carta.mostrar();
         }
     }
+    
+    //Metodo para regresar el ArrayList de la baraja
+    public ArrayList<Cartas> getBarajaCartas(){
+        return barajaCartas;
+    }
+}
     
     //Metodo para regresar el ArrayList de la baraja
     public ArrayList<Carta> getBarajaCartas(){

@@ -1,3 +1,4 @@
+package gushdezzz.maincartas;
 import javax.swing.*;
 import java.awt.*;
 
@@ -17,6 +18,10 @@ public class Carta {
         System.out.println(ruta);
     }
 
+    public String getRuta(){
+        return this.ruta;
+    }
+    
     public void setPalo() {
         this.palo = palo;
         if (this.visible == true) {
@@ -49,7 +54,7 @@ public class Carta {
         return this.visible;
     }
 
-    public void setVisible() {
+    public void setVisible(boolean visible) {
         this.visible = visible;
         if (this.visible == true) {
             this.ruta = "C:/Users/guspa/OneDrive/Documents/NetBeansProjects/MainCartas/src/main/java//gushdezzz/imagenesCartas/" + palo + valor + ".png";
@@ -59,6 +64,7 @@ public class Carta {
         this.icono = new ImageIcon(ruta);
     }
 
+    
     public ImageIcon getIcon() {
         return this.icono;
     }

@@ -1,50 +1,29 @@
-//Clase que modela la baraja espanola
-//Librerias necesarias para el codigo 
+package gushdezzz.maincartas;
 import java.util.ArrayList;
-import java.util.Collections;
-
 public class Baraja {
-    //Variables de la clase
-    //NivelDeAcceso ArrayList<TipoDeDato> Nombre
-    private ArrayList<Cartas> barajaCartas;
-
-    public Baraja(){
-        barajaCartas = new ArrayList<>();
-    }
-
-    //Metodo para crear la baraja
+    private ArrayList<Carta> mazo;
     public void crearBaraja(){
-        String[] tipos = {"oros", "espadas", "bastos", "copas"};
-        boolean flag;
-        for (int i = 0; i < 13; i++){
-            for(String tipo : tipos){
-                flag = true;
-                barajaCartas.add(new Cartas(tipo, i+1));
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 11; j++){
+                switch(i){
+                    case 1: 
+                        mazo.add(new Carta("bastos", j));
+                        break;
+                    case 2:
+                        mazo.add(new Carta("copas", j));
+                        break;
+                    case 3:
+                        mazo.add(new Carta("espadas", j));
+                        break;
+                    case 4:
+                        mazo.add(new Carta("oro", j));
+                        break;
+                }
             }
         }
     }
-
-    //Metodo para revolver la baraja
-    public void revolverBaraja(){
-        Collections.shuffle(barajaCartas);
-    }
-
-    public void mostrarBaraja(){
-        //Mostramos todas las cartas de la baraja
-        //for (tipoDeDato Variable : nombreDelArrayList) - for-each 
-        for (Cartas carta : barajaCartas){
-            carta.mostrar();
-        }
-    }
     
-    //Metodo para regresar el ArrayList de la baraja
-    public ArrayList<Cartas> getBarajaCartas(){
-        return barajaCartas;
-    }
-}
-    
-    //Metodo para regresar el ArrayList de la baraja
-    public ArrayList<Carta> getBarajaCartas(){
-        return barajaCartas;
+    public ArrayList<Carta> getMazo(){
+        return this.mazo;
     }
 }

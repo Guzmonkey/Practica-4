@@ -41,7 +41,7 @@ public class Jugador {
     public boolean buscarCarta(Carta carta){
         boolean bandera = false;
         for (int i=0; i<this.mano.size(); i++) {
-            if (this.mano.get(i).getRuta().equals("C:\\Users\\Gustavo\\Documents\\NetBeansProjects\\Practica04Poo\\src\\main\\java\\gushdezzz\\Cartas\\" + carta.getPalo() + carta.getValor() + ".jpg")){
+            if (this.mano.get(i).getRuta().equals("imagenes/" + carta.getFigura() + carta.getValor() + ".jpg")){
                 bandera = true;
             }
         }
@@ -52,10 +52,20 @@ public class Jugador {
         this.mano.get(carta-1).setVisible(false);
     }
     
+    public boolean validarVictoria(){
+        boolean bandera = true;
+        for (int i=0; i<this.mano.size(); i++){
+            if (this.mano.get(i).getVisible()){
+                bandera = false;
+            }
+        }
+        return bandera;
+    }
+    
     public JPanel getPanelMano(){
         JPanel panel = new JPanel(new FlowLayout());
         for (int i=0; i<this.mano.size(); i++) {
-            ImageIcon icono = new ImageIcon(this.mano.get(i).getIcon().getImage().getScaledInstance(54, 72, Image.SCALE_DEFAULT));
+            ImageIcon icono = new ImageIcon(this.mano.get(i).getIcono().getImage().getScaledInstance(54, 72, Image.SCALE_DEFAULT));
             JLabel etiqueta = new JLabel(icono);
             JPanel etiquetaPanel = new JPanel(new BorderLayout());
             etiquetaPanel.add(etiqueta, BorderLayout.CENTER);

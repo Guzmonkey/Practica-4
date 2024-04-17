@@ -1,12 +1,19 @@
 package gushdezzz.maincartas;
 import java.util.ArrayList;
+
 public class Baraja {
+     
     private ArrayList<Carta> mazo;
-    public void crearBaraja(){
-        for(int i = 0; i < 5; i++){
-            for(int j = 0; j < 11; j++){
-                switch(i){
-                    case 1: 
+    
+    public Baraja(){
+        mazo = new ArrayList<>();
+    }
+    
+    public void generarCartas(){
+        for (int i=1; i<5; i++){
+            for (int j=1; j<11; j++){
+                switch (i){
+                    case 1:
                         mazo.add(new Carta("bastos", j));
                         break;
                     case 2:
@@ -26,4 +33,5 @@ public class Baraja {
     public ArrayList<Carta> getMazo(){
         return this.mazo;
     }
+    
 }

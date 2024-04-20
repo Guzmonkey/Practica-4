@@ -1,17 +1,19 @@
-package com.mycompany.cinquillo;
+package com.mycompany.cinquillo;// Importamos las clases necesarias
 import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Scanner;
 
 public class Juego {
-    
+    // Declaracion de variables
     private ArrayList<Jugador> jugadores;
     private Baraja baraja;
     private Mesa mesa;
     private JPanel panelPrincipal;
     public JFrame ventana = new JFrame("Juego");
-    
+    /*
+    * Contructor de la clase juego
+    */
     public Juego(int cantidadJugadores){
         jugadores = new ArrayList<>();
         baraja = new Baraja();
@@ -23,15 +25,20 @@ public class Juego {
         panelPrincipal = new JPanel(null);
         panelPrincipal.setBackground(new Color(20, 134, 119));
     }
-    
+    /* 
+    * Metodo getPanelPrincipal
+    */
     public JPanel getPanelPrincipal(){
         return this.panelPrincipal;
     }
-    
+    /*
+    * Metodo que permite repartir cartas
+    */
     public void repartirCartas() {
+        // Declaracion de variables
         int numJugadores = this.jugadores.size();
         int cartasPorJugador = baraja.getMazo().size() / numJugadores;
-    
+        // Ciclo for para repartir las cartas
         for (int i = 0; i < numJugadores; i++) {
             Jugador jugador = jugadores.get(i);
             for (int j = 0; j < cartasPorJugador; j++) {
@@ -43,6 +50,7 @@ public class Juego {
     
         // Distribuir las cartas restantes
         int cartasRestantes = baraja.getMazo().size();
+        // Ciclo for para repartir las cartas
         for (int i = 0; i < cartasRestantes; i++) {
             int jugadorAleatorio = (int) (Math.random() * numJugadores);
             Jugador jugador = jugadores.get(jugadorAleatorio);
@@ -51,11 +59,13 @@ public class Juego {
             baraja.getMazo().remove(index);
         }
     }
-    
-    
+    /*
+    * Metodo que permite actualizar el panel
+    */
     public void actualizarPanel(){
         this.panelPrincipal.removeAll();
         JPanel panelSecundario = new JPanel();
+        // Utilizamos 
         switch (this.jugadores.size()){
             case 2:
                 for (int i=0; i<this.jugadores.size(); i++){
@@ -130,7 +140,9 @@ public class Juego {
         this.panelPrincipal.revalidate();
         this.panelPrincipal.repaint();
     }
-    
+    /*
+    * Metodo que permite actualizar el panel
+    */
     public void actualizarVentana (){
         this.ventana.getContentPane().removeAll();
         this.ventana.getContentPane().add(this.panelPrincipal);
@@ -142,7 +154,9 @@ public class Juego {
         this.ventana.setVisible(true);
         this.ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
+    /*
+    * Metodo que permite buscar el jugador que tenga la carta 5 de oro
+    */
     public int buscarPrimerTurno(){
         int turno = 0;
         for (int i=0; i<this.jugadores.size(); i++){
@@ -159,11 +173,12 @@ public class Juego {
         this.mesa.jugarCarta(new Carta("oros", 5));
         return turno;
     }
-    
-    public static void main(String[] args){ 
+    /*
+    * Metodo que permite jugar el juego del cinquillo
+    */
+    public void Jugar(int cantidad){ 
+        // Declaramos variables
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Ingrese el numero de jugadores: ");
-        int cantidad = scanner.nextInt();
         int turno;
         int cartaAJugar;
         Juego juego = new Juego(cantidad);
@@ -172,7 +187,9 @@ public class Juego {
         turno = juego.buscarPrimerTurno();
         juego.actualizarPanel();
         juego.actualizarVentana();
+        // Utilizamos un ciclo do-while 
         do{
+            // Utilizamos un switch-case para conocer el turno del jugador
             switch (turno){
                 case 1:
                     do{
@@ -297,9 +314,7 @@ public class Juego {
                     break;
             }
         }while (ganador == 0);
-        
+        // Mostramos que jugador fue el ganador
         System.out.println("El ganador fue el jugador" + ganador);
-        
     }
-    
 }

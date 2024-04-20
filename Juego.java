@@ -1,679 +1,305 @@
-//Librerias necesarias
+package com.mycompany.cinquillo;
 import java.util.ArrayList;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Scanner;
-import java.util.Collections;
 
 public class Juego {
-
-    //Variables del programa
-    //Creamos una baraja
+    
+    private ArrayList<Jugador> jugadores;
     private Baraja baraja;
-    //Creamos los ArrayList donde se guardaran las cartas de los jugadores
-    private ArrayList<Carta> cartasJug1;
-    private ArrayList<Carta> cartasJug2;
-    private ArrayList<Carta> cartasJug3;
-    private ArrayList<Carta> cartasJug4;
-    //Variable que almacena el numero de jugadores
-    private int jugadores;
-    //Array que almacena los ArrayList de las cartas de los jugadores
-    private ArrayList<Carta>[] cartasDeJugadores;
-    //ArrayList que almacena las cartas de diferentes clases
-    private ArrayList<Carta> cartasMonedas;
-    private ArrayList<Carta> cartasCopas;
-    private ArrayList<Carta> cartasPalos;
-    private ArrayList<Carta> cartasEspadas;
-    private int jugadorConEl5;
-
-    //Array de cartasJugadoresOrdenados
-    private ArrayList<Carta>[] cartasDeJugadoresOrdanados; 
-
-    //Bandera para buscar el ganador
-    private boolean ganador;
-
-    //Constructor del juego
-    public Juego(){
-        //Crea la instancia de la baraja
+    private Mesa mesa;
+    private JPanel panelPrincipal;
+    public JFrame ventana = new JFrame("Juego");
+    
+    public Juego(int cantidadJugadores){
+        jugadores = new ArrayList<>();
         baraja = new Baraja();
-        //Crea la baraja
-        baraja.crearBaraja();
-        //Revulve la baraja
-        baraja.revolverBaraja();
-        //Crea los ArrayList donde se almacenaran las cartas de los jugadores
-        cartasJug1 = new ArrayList<>();
-        cartasJug2 = new ArrayList<>();
-        cartasJug3 = new ArrayList<>();
-        cartasJug4 = new ArrayList<>();
-        //Creamos el Array de ArrayList con 4 jugadores
-        cartasDeJugadores = new ArrayList[4];
-        cartasDeJugadoresOrdanados = new ArrayList[4];
-
-        cartasMonedas = new ArrayList<>();
-        cartasCopas = new ArrayList<>();
-        cartasEspadas = new ArrayList<>();
-        cartasPalos = new ArrayList<>();
-
-        ganador = false;
+        mesa = new Mesa();
+        baraja.generarCartas();
+        for (int i=0; i<cantidadJugadores; i++){
+            jugadores.add(new Jugador("Jugador "+(i+1)));
+        }
+        panelPrincipal = new JPanel(null);
+        panelPrincipal.setBackground(new Color(20, 134, 119));
     }
-
-    //Metodo para repartir las cartas
-    public void repartirCartas(){
-        //Creamos un nuevo scanner
-        //Scanner nombre = new Scanner (entrada)
-        Scanner scanner = new Scanner(System.in);
-        //Ciclo do-while que se ejecutara mientras el usuario ingrese una cantidad de jugadores invalida
-        do {
-            System.out.println("Ingresa el numero de jugadores");
-            jugadores = scanner.nextInt();
-            //Repartimos las cartas desde la baraja
-            switch (jugadores) {
-                case 2:
-                    cartasJug1.addAll(baraja.getBarajaCartas().subList(0, 24));
-                    cartasJug2.addAll(baraja.getBarajaCartas().subList(24, 48));
-                    break;
-                case 3:
-                    cartasJug1.addAll(baraja.getBarajaCartas().subList(0, 16));
-                    cartasJug2.addAll(baraja.getBarajaCartas().subList(16, 32));
-                    cartasJug3.addAll(baraja.getBarajaCartas().subList(32, 48));
-                    break;
-                case 4:
-                    cartasJug1.addAll(baraja.getBarajaCartas().subList(0, 12));
-                    cartasJug2.addAll(baraja.getBarajaCartas().subList(12, 24));
-                    cartasJug3.addAll(baraja.getBarajaCartas().subList(24, 36));
-                    cartasJug4.addAll(baraja.getBarajaCartas().subList(36, 48));
-                    break;
-                default:
-                    System.out.println("Numero de jugadores invalido");
-                    break;
-            }
-
-        } while (jugadores < 2 || jugadores > 4);
+    
+    public JPanel getPanelPrincipal(){
+        return this.panelPrincipal;
     }
-
-    //Metodo para mostrar las cartas
-    public void mostrarCartasJug() {
-        //Ciclo for para iterar por el numero de jugadores
-        for (int i = 0; i < jugadores; i++) {
-            //Imprimimos el mensaje "Cartas del jugador i + 1:"
-            System.out.println("Cartas del jugador " + (i + 1) + ":");
-            //Creamos una variable temporal en la cual agregaremos las cartas del jugador i
-            ArrayList<Carta> cartasJugador = null;
-            switch (i) {
-                case 0:
-                    cartasJugador = cartasJug1;
-                    break;
-                case 1:
-                    cartasJugador = cartasJug2;
-                    break;
-                case 2:
-                    cartasJugador = cartasJug3;
-                    break;
-                case 3:
-                    cartasJugador = cartasJug4;
-                    break;
-                default:
-                    break;
-            }
-            //Imprimimos las cartas del jugador con un ciclo for-each
-            if (cartasJugador != null) {
-                for (Carta carta : cartasJugador) {
-                    carta.mostrar();
-                }
+    
+    public void repartirCartas() {
+        int numJugadores = this.jugadores.size();
+        int cartasPorJugador = baraja.getMazo().size() / numJugadores;
+    
+        for (int i = 0; i < numJugadores; i++) {
+            Jugador jugador = jugadores.get(i);
+            for (int j = 0; j < cartasPorJugador; j++) {
+                int index = (int) (Math.random() * baraja.getMazo().size());
+                jugador.getMano().add(baraja.getMazo().get(index));
+                baraja.getMazo().remove(index);
             }
         }
-    }
-
-    //Metodo que almacena las cartas de los jugadores en un Array
-    public void ordenarCartasDeJugadores(){
-        for (int i = 1; i < jugadores; i++) {
-            switch (i) {
-                case 1:
-                    cartasDeJugadores[0] = cartasJug1;
-                    break;
-                case 2:
-                    cartasDeJugadores[1] = cartasJug2;
-                    break;
-                case 3: 
-                    cartasDeJugadores[2] = cartasJug3;
-                    break;
-                case 4: 
-                    cartasDeJugadores[3] = cartasJug4;
-                    break;
-            }
-        }
-    }
-
-    public void encontrarJugador5DeMonesdas() {
-        // Itera sobre cada jugador
-        for (int i = 0; i < jugadores; i++) {
-            // Obtiene las cartas del jugador actual
-            ArrayList<Carta> cartasJugador = cartasDeJugadores[i];
-            // Verifica si el jugador tiene la carta 5 de monedas
-            if (cartasJugador != null) {
-                for (Carta carta : cartasJugador) {
-                    if (carta.getValor() == 5 && carta.getClase().equals("monedas")) {
-                        System.out.println("El jugador " + (i + 1) + " tiene la carta 5 de monedas.");
-                        jugadorConEl5 = i + 1;
-                    }
-                }
-            }
-        }
-    }
-
-    public void reoganizarJugadores(){
-        switch (jugadorConEl5) {
-            case 1:
-                cartasDeJugadoresOrdanados[0] = cartasJug1;
-                break;
-            case 2:
-                cartasDeJugadoresOrdanados[0] = cartasJug2;
-                break;
-            case 3:
-                cartasDeJugadoresOrdanados[0] = cartasJug3;
-                break;
-            case 4:
-                cartasDeJugadoresOrdanados[0] = cartasJug4;
-                break;
-        }
-
-        int indice = 1;
-        for (int i = 0; i < jugadores; i++) {
-            if (i != jugadorConEl5){
-                switch (i) {
-                    case 0:
-                        cartasDeJugadoresOrdanados[indice++] = cartasJug1;
-                        break;
-                    case 1:
-                        cartasDeJugadoresOrdanados[indice++] = cartasJug2;
-                        break;
-                    case 2:
-                        cartasDeJugadoresOrdanados[indice++] = cartasJug3;
-                        break;
-                    case 3:
-                        cartasDeJugadoresOrdanados[indice++] = cartasJug4;
-                        break;
-                }
-            }
-        }
-    }
-
-    public void imprimirCartasDeJugadoresOrdenadas() {
-        // Imprimir las cartas de los jugadores ordenadas
-        for (int i = 0; i < jugadores; i++) {
-            System.out.println("Cartas del jugador " + (i + 1) + ":");
-            if (cartasDeJugadoresOrdanados[i] != null) {
-                for (Carta carta : cartasDeJugadoresOrdanados[i]) {
-                    carta.mostrar();
-                }
-            }
-        }
-    }   
-
-    //Metodo para jugar al Cinquillo
-    public void jugarCinquillo2(){
-        //Contador de rondas
-        int ronda = 0;
-        if (ronda == 0){
-            cartasJug1 = cartasDeJugadoresOrdanados[0];
-            cartasJug2 = cartasDeJugadoresOrdanados[1];
-            cartasJug3 = cartasDeJugadoresOrdanados[2];
-            cartasJug4 = cartasDeJugadoresOrdanados[3];
-        }
-        if (ronda == 0){
-            //Jugador 1
-            //En la ronda 1 el jugador con la carta de 5 de Monedas debe iniciar
-            //Ciclo for para iterar por las cartas del jugador 1
-            for (Carta carta : cartasJug1) {
-                //Si es igual a 5 y de la clase monedas la anade al ArrayList de monedas y se quita del jugador 1
-                if (carta.getValor() == 5 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(carta);
-                    cartasJug1.remove(carta);
-                    break;
-                }     
-            }
-            //Jugador 2
-            for (Carta carta : cartasJug2) {
-                if (carta.getValor() == cartasMonedas.get(0).getValor() - 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(0, carta);
-                    cartasJug2.remove(carta);
-                    break;
-                } else if (carta.getValor() == cartasMonedas.get(cartasMonedas.size() - 1).getValor() + 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(carta);
-                    cartasJug2.remove(carta);
-                    break;
-                } else if (carta.getValor() == 5 && carta.getClase().equals("copas")){
-                    cartasCopas.add(carta);
-                    cartasJug2.remove(carta);
-                    break;
-                } else if (carta.getValor() == 5 && carta.getClase().equals("espadas")){
-                    cartasEspadas.add(carta);
-                    cartasJug2.remove(carta);
-                    break;
-                } else if (carta.getValor() == 5 && carta.getClase().equals("palos")){
-                    cartasPalos.add(carta);
-                    cartasJug2.remove(carta);
-                    break;
-                }
-            }
-            //Jugador 3
-            for (Carta carta : cartasJug3) {
-                if (carta.getValor() == cartasMonedas.get(0).getValor() - 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(0, carta);
-                    cartasJug3.remove(carta);
-                    break;
-                } else if (carta.getValor() == cartasMonedas.get(cartasMonedas.size() - 1).getValor() + 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(carta);
-                    cartasJug3.remove(carta);
-                    break;
-                } else if (!cartasCopas.isEmpty()){
-                    if (carta.getValor() == cartasCopas.get(0).getValor() - 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(0, carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasCopas.get(cartasCopas.size() - 1).getValor() + 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (cartasCopas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (!cartasEspadas.isEmpty()){
-                    if (carta.getValor() == cartasEspadas.get(0).getValor() - 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(0, carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasEspadas.get(cartasEspadas.size() - 1).getValor() + 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (cartasEspadas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (!cartasPalos.isEmpty()){
-                    if (carta.getValor() == cartasPalos.get(0).getValor() - 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(0, carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasPalos.get(cartasPalos.size() - 1).getValor() + 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (cartasPalos.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                }
-            }
-            //Jugador 4 
-            for (Carta carta : cartasJug4) {
-                if (carta.getValor() == cartasMonedas.get(0).getValor() - 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(0, carta);
-                    cartasJug4.remove(carta);
-                    break;
-                } else if (carta.getValor() == cartasMonedas.get(cartasMonedas.size() - 1).getValor() + 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(carta);
-                    cartasJug4.remove(carta);
-                    break;
-                } else if (!cartasCopas.isEmpty()){
-                    if (carta.getValor() == cartasCopas.get(0).getValor() - 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(0, carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasCopas.get(cartasCopas.size() - 1).getValor() + 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (cartasCopas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (!cartasEspadas.isEmpty()){
-                    if (carta.getValor() == cartasEspadas.get(0).getValor() - 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(0, carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasEspadas.get(cartasEspadas.size() - 1).getValor() + 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (cartasEspadas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (!cartasPalos.isEmpty()){
-                    if (carta.getValor() == cartasPalos.get(0).getValor() - 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(0, carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasPalos.get(cartasPalos.size() - 1).getValor() + 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (cartasPalos.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                }
-            }
-            ronda ++;
-        } else {
-            //Jugador 1
-            for (Carta carta : cartasJug1) {
-                if (carta.getValor() == cartasMonedas.get(0).getValor() - 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(0, carta);
-                    cartasJug1.remove(carta);
-                    break;
-                } else if (carta.getValor() == cartasMonedas.get(cartasMonedas.size() - 1).getValor() + 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(carta);
-                    cartasJug1.remove(carta);
-                    break;
-                } else if (!cartasCopas.isEmpty()){
-                    if (carta.getValor() == cartasCopas.get(0).getValor() - 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(0, carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasCopas.get(cartasCopas.size() - 1).getValor() + 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    }
-                } else if (cartasCopas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    }
-                } else if (!cartasEspadas.isEmpty()){
-                    if (carta.getValor() == cartasEspadas.get(0).getValor() - 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(0, carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasEspadas.get(cartasEspadas.size() - 1).getValor() + 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    }
-                } else if (cartasEspadas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    }
-                } else if (!cartasPalos.isEmpty()){
-                    if (carta.getValor() == cartasPalos.get(0).getValor() - 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(0, carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasPalos.get(cartasPalos.size() - 1).getValor() + 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    }
-                } else if (cartasPalos.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug1.remove(carta);
-                        break;
-                    }
-                }
-            }
-            //Jugador 2
-            for (Carta carta : cartasJug2) {
-                if (carta.getValor() == cartasMonedas.get(0).getValor() - 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(0, carta);
-                    cartasJug2.remove(carta);
-                    break;
-                } else if (carta.getValor() == cartasMonedas.get(cartasMonedas.size() - 1).getValor() + 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(carta);
-                    cartasJug2.remove(carta);
-                    break;
-                } else if (!cartasCopas.isEmpty()){
-                    if (carta.getValor() == cartasCopas.get(0).getValor() - 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(0, carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasCopas.get(cartasCopas.size() - 1).getValor() + 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    }
-                } else if (cartasCopas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    }
-                } else if (!cartasEspadas.isEmpty()){
-                    if (carta.getValor() == cartasEspadas.get(0).getValor() - 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(0, carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasEspadas.get(cartasEspadas.size() - 1).getValor() + 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    }
-                } else if (cartasEspadas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    }
-                } else if (!cartasPalos.isEmpty()){
-                    if (carta.getValor() == cartasPalos.get(0).getValor() - 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(0, carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasPalos.get(cartasPalos.size() - 1).getValor() + 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    }
-                } else if (cartasPalos.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug2.remove(carta);
-                        break;
-                    }
-                }
-            }
-            //Jugador 3
-            for (Carta carta : cartasJug3) {
-                if (carta.getValor() == cartasMonedas.get(0).getValor() - 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(0, carta);
-                    cartasJug3.remove(carta);
-                    break;
-                } else if (carta.getValor() == cartasMonedas.get(cartasMonedas.size() - 1).getValor() + 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(carta);
-                    cartasJug3.remove(carta);
-                    break;
-                } else if (!cartasCopas.isEmpty()){
-                    if (carta.getValor() == cartasCopas.get(0).getValor() - 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(0, carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasCopas.get(cartasCopas.size() - 1).getValor() + 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (cartasCopas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (!cartasEspadas.isEmpty()){
-                    if (carta.getValor() == cartasEspadas.get(0).getValor() - 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(0, carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasEspadas.get(cartasEspadas.size() - 1).getValor() + 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (cartasEspadas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (!cartasPalos.isEmpty()){
-                    if (carta.getValor() == cartasPalos.get(0).getValor() - 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(0, carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasPalos.get(cartasPalos.size() - 1).getValor() + 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                } else if (cartasPalos.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug3.remove(carta);
-                        break;
-                    }
-                }
-                
-            }
-            //Jugador 4 
-            for (Carta carta : cartasJug4) {
-                if (carta.getValor() == cartasMonedas.get(0).getValor() - 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(0, carta);
-                    cartasJug4.remove(carta);
-                    break;
-                } else if (carta.getValor() == cartasMonedas.get(cartasMonedas.size() - 1).getValor() + 1 && carta.getClase().equals("monedas")){
-                    cartasMonedas.add(carta);
-                    cartasJug4.remove(carta);
-                    break;
-                } else if (!cartasCopas.isEmpty()){
-                    if (carta.getValor() == cartasCopas.get(0).getValor() - 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(0, carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasCopas.get(cartasCopas.size() - 1).getValor() + 1 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (cartasCopas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("copas")){
-                        cartasCopas.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (!cartasEspadas.isEmpty()){
-                    if (carta.getValor() == cartasEspadas.get(0).getValor() - 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(0, carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasEspadas.get(cartasEspadas.size() - 1).getValor() + 1 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (cartasEspadas.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("espadas")){
-                        cartasEspadas.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (!cartasPalos.isEmpty()){
-                    if (carta.getValor() == cartasPalos.get(0).getValor() - 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(0, carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    } else if (carta.getValor() == cartasPalos.get(cartasPalos.size() - 1).getValor() + 1 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                } else if (cartasPalos.isEmpty()){
-                    if (carta.getValor() == 5 && carta.getClase().equals("palos")){
-                        cartasPalos.add(carta);
-                        cartasJug4.remove(carta);
-                        break;
-                    }
-                }
-            }
+    
+        // Distribuir las cartas restantes
+        int cartasRestantes = baraja.getMazo().size();
+        for (int i = 0; i < cartasRestantes; i++) {
+            int jugadorAleatorio = (int) (Math.random() * numJugadores);
+            Jugador jugador = jugadores.get(jugadorAleatorio);
+            int index = (int) (Math.random() * baraja.getMazo().size());
+            jugador.getMano().add(baraja.getMazo().get(index));
+            baraja.getMazo().remove(index);
         }
     }
     
-    public void mostrarCartasJugadas(){
-        System.out.println("Cartas jugadas de Monedas");
-        if (!cartasMonedas.isEmpty()){
-            for (Carta carta : cartasMonedas) {
-                System.out.println("[" + carta.getValor() + "/" + carta.getClase() + "]");
-            }
-        } else {
-            System.out.println("No hay cartas jugadas");
+    
+    public void actualizarPanel(){
+        this.panelPrincipal.removeAll();
+        JPanel panelSecundario = new JPanel();
+        switch (this.jugadores.size()){
+            case 2:
+                for (int i=0; i<this.jugadores.size(); i++){
+                    panelSecundario = this.jugadores.get(i).getPanelMano();
+                    switch (i){
+                        case 0:
+                            panelSecundario.setBounds(15, 500, 1260, 95);
+                            break;
+                        case 1:
+                            panelSecundario.setBounds(15, 0, 1260, 95);
+                            break;
+                    }
+                    this.panelPrincipal.add(panelSecundario);
+                }
+                break;
+            case 3:
+                for (int i=0; i<this.jugadores.size(); i++){
+                    panelSecundario = this.jugadores.get(i).getPanelMano();
+                    switch (i){
+                        case 0:
+                            panelSecundario.setBounds(450, 450, 464, 192);
+                            break;
+                        case 1:
+                            panelSecundario.setBounds(50, 0, 464, 192);
+                            break;
+                        case 2:
+                            panelSecundario.setBounds(750, 0, 464, 192);
+                            break;
+                    }
+                    this.panelPrincipal.add(panelSecundario);
+                }
+                break;
+            case 4:
+                for (int i=0; i<this.jugadores.size(); i++){
+                    panelSecundario = this.jugadores.get(i).getPanelMano();
+                    switch (i){
+                        case 0:
+                            panelSecundario.setBounds(525, 440, 320, 192);
+                            break;
+                        case 1:
+                            panelSecundario.setBounds(25, 228, 320, 192);
+                            break;
+                        case 2:
+                            panelSecundario.setBounds(525, 0, 320, 192);
+                            break;
+                        case 3:
+                            panelSecundario.setBounds(930, 228, 320, 192);
+                            break;
+                    }
+                    this.panelPrincipal.add(panelSecundario);
+                }
+                break;
         }
-        System.out.println("Cartas jugadas de Copas");
-        if (!cartasCopas.isEmpty()){
-            for (Carta carta : cartasCopas) {
-            System.out.println("[" + carta.getValor() + "/" + carta.getClase() + "]");
-            }
-        } else {
-            System.out.println("No hay cartas jugadas");
-        }
-        System.out.println("Cartas jugadas de Espadas");
-        if (!cartasEspadas.isEmpty()){
-            for (Carta carta : cartasEspadas) {
-                System.out.println("[" + carta.getValor() + "/" + carta.getClase() + "]");
-            }
-        } else {
-            System.out.println("No hay cartas jugadas");
-        }
-        System.out.println("Cartas jugadas de Palos");
-        if (!cartasPalos.isEmpty()){
-            for (Carta carta : cartasPalos) {
-                System.out.println("[" + carta.getValor() + "/" + carta.getClase() + "]");
-            }
-        } else {
-            System.out.println("No hay cartas jugadas");
-        }
+        
+        
+        JPanel panelOros = mesa.getPanelOros();
+        panelOros.setBounds(320, 385, 740, 240);
+        this.panelPrincipal.add(panelOros);
+        
+        JPanel panelEspadas = mesa.getPanelEspadas();
+        panelEspadas.setBounds(320, 335, 740, 240);
+        this.panelPrincipal.add(panelEspadas);
+        
+        JPanel panelCopas = mesa.getPanelCopas();
+        panelCopas.setBounds(320, 285, 740, 240);
+        this.panelPrincipal.add(panelCopas);
+        
+        JPanel panelBastos = mesa.getPanelBastos();
+        panelBastos.setBounds(320, 235, 740, 240);
+        this.panelPrincipal.add(panelBastos);
+        
+        this.panelPrincipal.revalidate();
+        this.panelPrincipal.repaint();
     }
-
-    public boolean buscarGanador(){
-        if (cartasJug1.isEmpty()){
-            System.out.println("El jugador 1 ha ganado");
-            ganador = true;
-            return true;
-        } else if (cartasJug2.isEmpty()){
-            System.out.println("El jugador 2 ha ganado");
-            ganador = true;
-            return true;
-        } else if (cartasJug3.isEmpty()){
-            System.out.println("El jugador 3 ha ganado");
-            ganador = true;
-            return true;
-        } else if (cartasJug4.isEmpty()){
-            System.out.println("El jugador 4 ha ganado");
-            ganador = true;
-            return true;
-        } else {
-            return false;
-        }
+    
+    public void actualizarVentana (){
+        this.ventana.getContentPane().removeAll();
+        this.ventana.getContentPane().add(this.panelPrincipal);
+        this.ventana.revalidate();
+        this.ventana.repaint();
+        this.ventana.pack();
+        this.ventana.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.ventana.setLocationRelativeTo(null);
+        this.ventana.setVisible(true);
+        this.ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+    
+    public int buscarPrimerTurno(){
+        int turno = 0;
+        for (int i=0; i<this.jugadores.size(); i++){
+            if (this.jugadores.get(i).buscarCarta(new Carta("oros", 5))){
+                turno = i+1;
+                for (int j=0; j<this.jugadores.get(i).getMano().size(); j++){
+                    if (this.jugadores.get(i).getMano().get(j).getFigura().equals("oros") && this.jugadores.get(i).getMano().get(j).getValor() == 5){
+                        this.jugadores.get(i).jugarCarta(j+1);
+                    }
+                }
+            }
+        }
+        this.mesa.llenarMesa();
+        this.mesa.jugarCarta(new Carta("oros", 5));
+        return turno;
+    }
+    
+    public static void main(String[] args){ 
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el numero de jugadores: ");
+        int cantidad = scanner.nextInt();
+        int turno;
+        int cartaAJugar;
+        Juego juego = new Juego(cantidad);
+        int ganador = 0;
+        juego.repartirCartas();
+        turno = juego.buscarPrimerTurno();
+        juego.actualizarPanel();
+        juego.actualizarVentana();
+        do{
+            switch (turno){
+                case 1:
+                    do{
+                        if (juego.jugadores.get(turno-1).validarVictoria()){
+                            ganador = turno;
+                            break;
+                        }
+                        do{
+                           System.out.println("Turno del jugador " + turno + ":");
+                           cartaAJugar = scanner.nextInt(); 
+                           if (cartaAJugar == 0){
+                               break;
+                           }
+                        }while (cartaAJugar>juego.jugadores.get(turno-1).getMano().size() || !juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1).getVisible());
+                        if (cartaAJugar<=juego.jugadores.get(turno-1).getMano().size()+1 && cartaAJugar>0){
+                            if (juego.mesa.validarCarta(juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1))){
+                                juego.jugadores.get(turno-1).jugarCarta(cartaAJugar);
+                                juego.mesa.jugarCarta(juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1));
+                                juego.actualizarPanel();
+                                juego.actualizarVentana();
+                            }else{
+                                cartaAJugar = -1;
+                            }    
+                        }
+                    }while (cartaAJugar != 0);
+                    turno++;
+                    break;
+                case 2:
+                    do{
+                        if (juego.jugadores.get(turno-1).validarVictoria()){
+                            ganador = turno;
+                            break;
+                        }
+                        do{
+                           System.out.println("Turno del jugador " + turno + ":");
+                           cartaAJugar = scanner.nextInt(); 
+                           if (cartaAJugar == 0){
+                               break;
+                           }
+                        }while (cartaAJugar>juego.jugadores.get(turno-1).getMano().size() || !juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1).getVisible());
+                        if (cartaAJugar<=juego.jugadores.get(turno-1).getMano().size()+1 && cartaAJugar>0){
+                            if (juego.mesa.validarCarta(juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1))){
+                                juego.jugadores.get(turno-1).jugarCarta(cartaAJugar);
+                                juego.mesa.jugarCarta(juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1));
+                                juego.actualizarPanel();
+                                juego.actualizarVentana();
+                            }else{
+                                cartaAJugar = -1;
+                            }
+                        }
+                    }while (cartaAJugar != 0);
+                    switch (juego.jugadores.size()){
+                        case 2:
+                            turno = 1;
+                            break;
+                        case 3:
+                            turno++;
+                            break;
+                        case 4:
+                            turno++;
+                            break;
+                    }
+                    break;
+                case 3:
+                    do{
+                        if (juego.jugadores.get(turno-1).validarVictoria()){
+                            ganador = turno;
+                            break;
+                        }
+                        do{
+                           System.out.println("Turno del jugador " + turno + ":");
+                           cartaAJugar = scanner.nextInt();
+                           if (cartaAJugar == 0){
+                               break;
+                           }
+                        }while (cartaAJugar>juego.jugadores.get(turno-1).getMano().size() || !juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1).getVisible());
+                        if (cartaAJugar<=juego.jugadores.get(turno-1).getMano().size()+1 && cartaAJugar>0){
+                            if (juego.mesa.validarCarta(juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1))){
+                                juego.jugadores.get(turno-1).jugarCarta(cartaAJugar);
+                                juego.mesa.jugarCarta(juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1));
+                                juego.actualizarPanel();
+                                juego.actualizarVentana();
+                            }else{
+                                cartaAJugar = -1;
+                            }
+                        }
+                    }while (cartaAJugar != 0);
+                    switch (juego.jugadores.size()){
+                        case 3:
+                            turno = 1;
+                            break;
+                        case 4:
+                            turno++;
+                            break;
+                    }
+                    break;
+                case 4:
+                    do{
+                        if (juego.jugadores.get(turno-1).validarVictoria()){
+                            ganador = turno;
+                            break;
+                        }
+                        do{
+                           System.out.println("Turno del jugador " + turno + ":");
+                           cartaAJugar = scanner.nextInt(); 
+                           if (cartaAJugar == 0){
+                               break;
+                           }
+                        }while (cartaAJugar>juego.jugadores.get(turno-1).getMano().size() || !juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1).getVisible());
+                        if (cartaAJugar<=juego.jugadores.get(turno-1).getMano().size()+1 && cartaAJugar>0){
+                            if (juego.mesa.validarCarta(juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1))){
+                                juego.jugadores.get(turno-1).jugarCarta(cartaAJugar);
+                                juego.mesa.jugarCarta(juego.jugadores.get(turno-1).getMano().get(cartaAJugar-1));
+                                juego.actualizarPanel();
+                                juego.actualizarVentana();
+                            }else{
+                                cartaAJugar = -1;
+                            }
+                        }
+                    }while (cartaAJugar != 0);
+                    turno = 1;
+                    break;
+            }
+        }while (ganador == 0);
+        
+        System.out.println("El ganador fue el jugador" + ganador);
+        
+    }
+    
 }

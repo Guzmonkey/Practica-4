@@ -1,68 +1,43 @@
-//Clase que modela la baraja espanola
-
-//Librerias necesarias para el codigo 
+package com.mycompany.cinquillo;
+// Importamos la clase ArrayList
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 public class Baraja {
-    //Variables de la clase
-    //NivelDeAcceso ArrayList<TipoDeDato> Nombre
-    private ArrayList<Carta> barajaCartas;
-
-    public Baraja(){
-        barajaCartas = new ArrayList<>();
-    }
-
-    /*Metodo para crear la baraja
-    public void crearBaraja(){
-        for (int i = 0; i < 4; i++) {
-            if (i == 0){
-                for (int j = 0; j < 12; j++) {
-                    barajCartas.add(new Carta(j + 1, "moneda", false));
-                }
-            } else if (i == 1){
-                for (int j = 0; j < 12; j++) {
-                    barajCartas.add(new Carta(j + 1, "espadas", false));
-                }
-            } else if (i == 2){
-                for (int j = 0; j < 12; j++) {
-                    barajCartas.add(new Carta(j + 1, "palos", false));
-                }
-            }else{
-                for (int j = 0; j < 12; j++) {
-                    barajCartas.add(new Carta(j + 1, "copas", false));
-                }
-            }
-        }
-    }
+    // Declaracion de variables
+    private ArrayList<Carta> mazo;
+    /*
+    * Constructor de la clase Baraja
     */
-
-    //Metodo mejorado
-    public void crearBaraja() {
-        String[] tipos = {"monedas", "espadas", "palos", "copas"};
-        for (String tipo : tipos) {
-            for (int j = 0; j < 12; j++) {
-                barajaCartas.add(new Carta(j + 1, tipo, true));
+    public Baraja(){
+        mazo = new ArrayList<>();
+    }
+    /*
+    * Metodo que permite generar cartas 
+    */
+    public void generarCartas(){
+        for (int i=1; i<5; i++){
+            for (int j=1; j<11; j++){
+                switch (i){
+                    case 1:
+                        mazo.add(new Carta("bastos", j));
+                        break;
+                    case 2:
+                        mazo.add(new Carta("copas", j));
+                        break;
+                    case 3:
+                        mazo.add(new Carta("espadas", j));
+                        break;
+                    case 4:
+                        mazo.add(new Carta("oros", j));
+                        break;
+                }
             }
         }
     }
-
-    //Metodo para revolver la baraja
-    public void revolverBaraja(){
-        Collections.shuffle(barajaCartas);
-    }
-
-    public void mostrarBaraja(){
-        //Mostramos todas las cartas de la baraja
-        //for (tipoDeDato Variable : nombreDelArrayList) - for-each 
-        for (Carta carta : barajaCartas){
-            carta.mostrar();
-        }
+    /*
+    * Metodo get
+    */
+    public ArrayList<Carta> getMazo(){
+        return this.mazo;
     }
     
-    //Metodo para regresar el ArrayList de la baraja
-    public ArrayList<Carta> getBarajaCartas(){
-        return barajaCartas;
-    }
 }
